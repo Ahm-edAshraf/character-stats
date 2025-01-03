@@ -23,18 +23,19 @@ const loginForm = document.getElementById('login-form');
 const registerForm = document.getElementById('register-form');
 const resetForm = document.getElementById('reset-form');
 
-// Check login status on page load
-document.addEventListener('DOMContentLoaded', () => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
-        if (user.isAdmin) {
-            showAdminPanel();
-        } else {
-            showStatsPanel();
-            loadCharacter();
-        }
-    }
-});
+// Show/Hide containers
+function showStatsPanel() {
+    document.getElementById('auth-container').style.display = 'none';
+    document.getElementById('stats-container').style.display = 'block';
+    document.getElementById('admin-container').style.display = 'none';
+}
+
+function showAdminPanel() {
+    document.getElementById('auth-container').style.display = 'none';
+    document.getElementById('stats-container').style.display = 'none';
+    document.getElementById('admin-container').style.display = 'block';
+    loadAllCharacters();
+}
 
 // Toggle between login and register forms
 function toggleForms() {
@@ -84,9 +85,11 @@ async function login() {
 
         localStorage.setItem('user', JSON.stringify(data));
         
-        if (data.user.isAdmin) {
+        if (data.user && data.user.isAdmin) {
+            console.log('Showing admin panel');
             showAdminPanel();
         } else {
+            console.log('Showing stats panel');
             showStatsPanel();
             loadCharacter();
         }
@@ -134,20 +137,19 @@ function logout() {
     location.reload();
 }
 
-// Show stats panel
-function showStatsPanel() {
-    authContainer.classList.add('hidden');
-    adminContainer.classList.add('hidden');
-    statsContainer.classList.remove('hidden');
-}
-
-// Show admin panel
-function showAdminPanel() {
-    authContainer.classList.add('hidden');
-    statsContainer.classList.add('hidden');
-    adminContainer.classList.remove('hidden');
-    loadAllCharacters();
-}
+// Check login status on page load
+document.addEventListener('DOMContentLoaded', () => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+        const { user } = JSON.parse(userData);
+        if (user.isAdmin) {
+            showAdminPanel();
+        } else {
+            showStatsPanel();
+            loadCharacter();
+        }
+    }
+});
 
 // Load character data
 async function loadCharacter() {
