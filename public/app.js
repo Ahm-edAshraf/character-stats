@@ -1,7 +1,7 @@
 // API URL - Change this to your deployed backend URL when deploying
-const API_URL = window.location.hostname === 'localhost' 
-    ? 'http://localhost:3000/api'
-    : 'https://your-backend-url.onrender.com/api'; // Replace with your actual backend URL when deployed
+const API_URL = window.location.hostname.includes('render') || window.location.hostname.includes('localhost')
+    ? `${window.location.protocol}//${window.location.hostname}${window.location.hostname === 'localhost' ? ':3000' : ''}/api`
+    : 'https://character-stats-backend.onrender.com/api';
 
 // Auth token management
 function getToken() {

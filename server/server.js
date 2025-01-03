@@ -11,8 +11,11 @@ const app = express();
 
 // Middleware
 app.use(cors({
-    origin: process.env.NODE_ENV === 'production' 
-        ? ['https://yourusername.github.io'] // Replace with your GitHub Pages domain
+    origin: process.env.NODE_ENV === 'production'
+        ? [
+            'https://character-stats-frontend.onrender.com',
+            'https://character-stats-backend.onrender.com'
+          ]
         : ['http://localhost:3000', 'http://127.0.0.1:5500'],
     credentials: true
 }));
