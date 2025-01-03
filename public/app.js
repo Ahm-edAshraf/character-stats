@@ -21,6 +21,7 @@ const statsContainer = document.getElementById('stats-container');
 const adminContainer = document.getElementById('admin-container');
 const loginForm = document.getElementById('login-form');
 const registerForm = document.getElementById('register-form');
+const resetForm = document.getElementById('reset-form');
 
 // Check login status on page load
 document.addEventListener('DOMContentLoaded', () => {
@@ -39,6 +40,26 @@ document.addEventListener('DOMContentLoaded', () => {
 function toggleForms() {
     loginForm.classList.toggle('hidden');
     registerForm.classList.toggle('hidden');
+    resetForm.classList.toggle('hidden');
+}
+
+// Show/Hide forms
+function showLoginForm() {
+    document.getElementById('login-form').style.display = 'block';
+    document.getElementById('register-form').style.display = 'none';
+    document.getElementById('reset-form').style.display = 'none';
+}
+
+function showRegisterForm() {
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('register-form').style.display = 'block';
+    document.getElementById('reset-form').style.display = 'none';
+}
+
+function showResetForm() {
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('register-form').style.display = 'none';
+    document.getElementById('reset-form').style.display = 'block';
 }
 
 // Login function
@@ -79,12 +100,19 @@ async function login() {
 async function register() {
     const email = document.getElementById('register-email').value;
     const password = document.getElementById('register-password').value;
+    const securityQuestion = document.getElementById('security-question').value;
+    const securityAnswer = document.getElementById('security-answer').value;
 
     try {
         const response = await fetch(`${API_URL}/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ 
+                email, 
+                password,
+                securityQuestion,
+                securityAnswer
+            })
         });
 
         const data = await response.json();
@@ -287,6 +315,58 @@ function getSkillItems() {
     return skills;
 }
 
+// Password Reset Functions
+let resetToken = '';
+
+async function requestPasswordReset() {
+    const email = document.getElementById('reset-email').value;
+    const securityQuestion = document.getElementById('reset-security-question').value;
+    const securityAnswer = document.getElementById('reset-security-answer').value;
+
+    try {
+        const response = await fetch(`${API_URL}/auth/reset-request`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, securityQuestion, securityAnswer })
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message);
+        }
+
+        resetToken = data.resetToken;
+        document.getElementById('reset-step-1').style.display = 'none';
+        document.getElementById('reset-step-2').style.display = 'block';
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+async function resetPassword() {
+    const newPassword = document.getElementById('new-password').value;
+
+    try {
+        const response = await fetch(`${API_URL}/auth/reset-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ resetToken, newPassword })
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message);
+        }
+
+        alert('Password reset successful! Please login with your new password.');
+        showLoginForm();
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
 // Admin functions
 async function loadAllCharacters() {
     try {
@@ -319,6 +399,10 @@ async function loadAllCharacters() {
                 <button onclick="viewCharacterDetails('${character._id}')" 
                         class="mt-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md w-full">
                     View Details
+                </button>
+                <button onclick="deleteCharacter('${character._id}')" 
+                        class="mt-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md w-full">
+                    Delete Character
                 </button>
             `;
             userList.appendChild(characterDiv);
@@ -403,5 +487,30 @@ async function viewCharacterDetails(characterId) {
         document.body.appendChild(modal);
     } catch (error) {
         alert('Failed to load character details: ' + error.message);
+    }
+}
+
+async function deleteCharacter(characterId) {
+    if (!confirm('Are you sure you want to delete this character? This action cannot be undone.')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/admin/characters/${characterId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${getToken()}`
+            }
+        });
+
+        if (!response.ok) {
+            const data = await response.json();
+            throw new Error(data.message);
+        }
+
+        alert('Character deleted successfully');
+        loadAllCharacters(); // Refresh the admin panel
+    } catch (error) {
+        alert('Failed to delete character: ' + error.message);
     }
 }

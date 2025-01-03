@@ -162,6 +162,75 @@ app.get('/api/admin/characters', protect, admin, async (req, res) => {
     }
 });
 
+app.delete('/api/admin/characters/:id', protect, admin, async (req, res) => {
+    try {
+        const character = await Character.findById(req.params.id);
+        if (!character) {
+            return res.status(404).json({ message: 'Character not found' });
+        }
+
+        await Character.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Character deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.post('/api/auth/reset-request', async (req, res) => {
+    try {
+        const { email, securityQuestion, securityAnswer } = req.body;
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        if (!user.securityQuestion || !user.securityAnswer) {
+            return res.status(400).json({ message: 'Security question not set up for this account' });
+        }
+
+        if (user.securityQuestion !== securityQuestion || user.securityAnswer !== securityAnswer) {
+            return res.status(401).json({ message: 'Incorrect security answer' });
+        }
+
+        // Generate a temporary reset token
+        const resetToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        user.resetToken = resetToken;
+        user.resetTokenExpiry = Date.now() + 3600000; // 1 hour
+        await user.save();
+
+        res.json({ resetToken });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.post('/api/auth/reset-password', async (req, res) => {
+    try {
+        const { resetToken, newPassword } = req.body;
+        const decoded = jwt.verify(resetToken, process.env.JWT_SECRET);
+        
+        const user = await User.findOne({
+            _id: decoded.id,
+            resetToken,
+            resetTokenExpiry: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid or expired reset token' });
+        }
+
+        user.password = newPassword;
+        user.resetToken = undefined;
+        user.resetTokenExpiry = undefined;
+        await user.save();
+
+        res.json({ message: 'Password reset successful' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
