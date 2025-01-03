@@ -106,7 +106,19 @@ async function register() {
     const securityQuestion = document.getElementById('security-question').value;
     const securityAnswer = document.getElementById('security-answer').value;
 
+    if (!email || !password || !securityQuestion || !securityAnswer) {
+        alert('Please fill in all fields');
+        return;
+    }
+
     try {
+        console.log('Attempting registration with:', { 
+            email, 
+            password, 
+            securityQuestion, 
+            securityAnswer 
+        });
+
         const response = await fetch(`${API_URL}/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -119,6 +131,7 @@ async function register() {
         });
 
         const data = await response.json();
+        console.log('Registration response:', data);
         
         if (!response.ok) {
             throw new Error(data.message);
@@ -127,6 +140,7 @@ async function register() {
         localStorage.setItem('user', JSON.stringify(data));
         showStatsPanel();
     } catch (error) {
+        console.error('Registration error:', error);
         alert('Registration failed: ' + error.message);
     }
 }

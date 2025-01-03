@@ -43,15 +43,35 @@ createAdminUser();
 // Auth Routes
 app.post('/api/auth/register', async (req, res) => {
     try {
-        const { email, password } = req.body;
-        const userExists = await User.findOne({ email });
+        const { email, password, securityQuestion, securityAnswer } = req.body;
 
+        // Validate required fields
+        if (!email || !password || !securityQuestion || !securityAnswer) {
+            return res.status(400).json({ 
+                message: 'All fields are required: email, password, securityQuestion, and securityAnswer' 
+            });
+        }
+
+        // Check if user already exists
+        const userExists = await User.findOne({ email });
         if (userExists) {
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        const user = await User.create({ email, password });
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+        // Create user
+        const user = await User.create({
+            email,
+            password,
+            securityQuestion,
+            securityAnswer
+        });
+
+        // Generate token
+        const token = jwt.sign(
+            { id: user._id, email: user.email, isAdmin: user.isAdmin },
+            process.env.JWT_SECRET,
+            { expiresIn: '30d' }
+        );
 
         res.status(201).json({
             token,
@@ -62,7 +82,13 @@ app.post('/api/auth/register', async (req, res) => {
             }
         });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Registration error:', error);
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({ 
+                message: Object.values(error.errors).map(err => err.message).join(', ')
+            });
+        }
+        res.status(500).json({ message: 'Server error during registration' });
     }
 });
 

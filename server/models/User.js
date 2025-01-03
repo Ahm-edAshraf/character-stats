@@ -4,12 +4,14 @@ const bcrypt = require('bcryptjs');
 const userSchema = new mongoose.Schema({
     email: {
         type: String,
-        required: true,
-        unique: true
+        required: [true, 'Email is required'],
+        unique: true,
+        trim: true,
+        lowercase: true
     },
     password: {
         type: String,
-        required: true
+        required: [true, 'Password is required']
     },
     isAdmin: {
         type: Boolean,
@@ -17,7 +19,7 @@ const userSchema = new mongoose.Schema({
     },
     securityQuestion: {
         type: String,
-        required: true,
+        required: [true, 'Security question is required'],
         enum: [
             'What was your first pet\'s name?',
             'What city were you born in?',
@@ -28,7 +30,9 @@ const userSchema = new mongoose.Schema({
     },
     securityAnswer: {
         type: String,
-        required: true
+        required: [true, 'Security answer is required'],
+        trim: true,
+        lowercase: true // Store in lowercase for case-insensitive comparison
     },
     resetToken: String,
     resetTokenExpiry: Date
@@ -39,13 +43,17 @@ const userSchema = new mongoose.Schema({
 // Hash password before saving
 userSchema.pre('save', async function(next) {
     if (this.isModified('password')) {
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
+        this.password = await bcrypt.hash(this.password, 10);
     }
+    
+    // Convert security answer to lowercase
+    if (this.isModified('securityAnswer')) {
+        this.securityAnswer = this.securityAnswer.toLowerCase().trim();
+    }
+    
     next();
 });
 
-// Compare password method
 userSchema.methods.matchPassword = async function(enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
