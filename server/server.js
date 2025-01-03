@@ -11,13 +11,10 @@ const app = express();
 
 // Middleware
 app.use(cors({
-    origin: process.env.NODE_ENV === 'production'
-        ? [
-            'https://character-stats-frontend.onrender.com',
-            'https://character-stats-backend.onrender.com'
-          ]
-        : ['http://localhost:3000', 'http://127.0.0.1:5500'],
-    credentials: true
+    origin: '*', // Allow all origins temporarily for testing
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 app.use(express.static('public'));

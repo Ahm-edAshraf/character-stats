@@ -1,7 +1,5 @@
 // API URL - Change this to your deployed backend URL when deploying
-const API_URL = window.location.hostname.includes('render') || window.location.hostname.includes('localhost')
-    ? `${window.location.protocol}//${window.location.hostname}${window.location.hostname === 'localhost' ? ':3000' : ''}/api`
-    : 'https://character-stats-backend.onrender.com/api';
+const API_URL = 'https://character-stats-backend.onrender.com/api';
 
 // Auth token management
 function getToken() {
@@ -49,6 +47,7 @@ async function login() {
     const password = document.getElementById('login-password').value;
 
     try {
+        console.log('Attempting login with:', { email, password });
         const response = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -56,9 +55,10 @@ async function login() {
         });
 
         const data = await response.json();
+        console.log('Login response:', data);
         
         if (!response.ok) {
-            throw new Error(data.message);
+            throw new Error(data.message || 'Login failed');
         }
 
         localStorage.setItem('user', JSON.stringify(data));
@@ -70,6 +70,7 @@ async function login() {
             loadCharacter();
         }
     } catch (error) {
+        console.error('Login error:', error);
         alert('Login failed: ' + error.message);
     }
 }
