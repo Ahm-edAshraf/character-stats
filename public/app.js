@@ -187,6 +187,7 @@ async function loadCharacter() {
 
 // Save character data
 async function saveCharacter() {
+    const characterId = document.getElementById('char-id').value;
     const character = {
         name: document.getElementById('char-name').value,
         role: document.getElementById('char-role').value,
@@ -207,9 +208,9 @@ async function saveCharacter() {
     };
 
     try {
-        const method = character._id ? 'PUT' : 'POST';
-        const url = character._id ? 
-            `${API_URL}/characters/${character._id}` : 
+        const method = characterId ? 'PUT' : 'POST';
+        const url = characterId ? 
+            `${API_URL}/characters/${characterId}` : 
             `${API_URL}/characters`;
 
         const response = await fetch(url, {
@@ -232,6 +233,8 @@ async function saveCharacter() {
 
 // Populate character form with data
 function populateCharacterForm(character) {
+    // Store the character ID in a hidden field
+    document.getElementById('char-id').value = character._id || '';
     document.getElementById('char-name').value = character.name || '';
     document.getElementById('char-role').value = character.role || '';
     document.getElementById('char-gender').value = character.gender || '';
