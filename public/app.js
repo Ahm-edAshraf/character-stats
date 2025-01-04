@@ -553,6 +553,56 @@ const STAT_FIELDS = ['strength', 'health', 'speed', 'stamina', 'cursed-energy', 
 let totalPoints = DEFAULT_POINTS;
 let previousLevel = 0;
 
+// Calculate total available points based on level
+function calculateTotalPointsForLevel(level) {
+    // Level 0 gets base points only
+    // Level 1 and above get additional points
+    const levelPoints = level > 0 ? level * POINTS_PER_LEVEL : 0;
+    return DEFAULT_POINTS + levelPoints;
+}
+
+function updateTotalPoints() {
+    const level = parseInt(document.getElementById('char-level')?.value) || 0;
+    if (level < 0) {
+        const levelInput = document.getElementById('char-level');
+        if (levelInput) {
+            levelInput.value = 0;
+        }
+        return;
+    }
+    
+    // Calculate total available points based on current level
+    const maxPoints = calculateTotalPointsForLevel(level);
+    
+    // Calculate used points
+    const usedPoints = STAT_FIELDS.reduce((total, stat) => {
+        const input = document.getElementById(`char-${stat}`);
+        const value = parseInt(input?.value) || 0;
+        return total + value;
+    }, 0);
+
+    // Update total points
+    totalPoints = maxPoints - usedPoints;
+    const totalPointsElement = document.getElementById('total-points');
+    if (totalPointsElement) {
+        totalPointsElement.textContent = totalPoints;
+    }
+
+    // Disable stat inputs if no points available
+    STAT_FIELDS.forEach(stat => {
+        const input = document.getElementById(`char-${stat}`);
+        if (!input) return;
+
+        const currentValue = parseInt(input.value) || 0;
+        input.max = currentValue + totalPoints;
+        if (totalPoints <= 0 && currentValue === 0) {
+            input.disabled = true;
+        } else {
+            input.disabled = false;
+        }
+    });
+}
+
 function initializePointsSystem() {
     // Add listeners to all stat fields
     STAT_FIELDS.forEach(stat => {
@@ -564,7 +614,17 @@ function initializePointsSystem() {
             const oldValue = parseInt(e.target.dataset.previousValue) || 0;
             const pointDifference = newValue - oldValue;
 
-            if (pointDifference > totalPoints) {
+            // Calculate current total points available
+            const level = parseInt(document.getElementById('char-level')?.value) || 0;
+            const maxPoints = calculateTotalPointsForLevel(level);
+            const usedPoints = STAT_FIELDS.reduce((total, s) => {
+                if (s === stat) return total; // Exclude current stat being changed
+                const input = document.getElementById(`char-${s}`);
+                return total + (parseInt(input?.value) || 0);
+            }, 0);
+            const availablePoints = maxPoints - usedPoints;
+
+            if (pointDifference > availablePoints) {
                 alert('Not enough points available!');
                 e.target.value = oldValue;
                 return;
@@ -588,55 +648,31 @@ function initializePointsSystem() {
     if (levelInput) {
         levelInput.addEventListener('change', (e) => {
             const newLevel = parseInt(e.target.value) || 0;
-            if (newLevel < previousLevel) {
-                const usedPoints = STAT_FIELDS.reduce((total, stat) => {
-                    const input = document.getElementById(`char-${stat}`);
-                    return total + (parseInt(input?.value) || 0);
-                }, 0);
-                
-                if (usedPoints > DEFAULT_POINTS + (newLevel * POINTS_PER_LEVEL)) {
-                    alert('Cannot decrease level: too many points already used in stats!');
-                    e.target.value = previousLevel;
-                    return;
-                }
+            if (newLevel < 0) {
+                e.target.value = 0;
+                updateTotalPoints();
+                return;
             }
+
+            const maxPoints = calculateTotalPointsForLevel(newLevel);
+            const usedPoints = STAT_FIELDS.reduce((total, stat) => {
+                const input = document.getElementById(`char-${stat}`);
+                return total + (parseInt(input?.value) || 0);
+            }, 0);
+
+            if (usedPoints > maxPoints) {
+                alert('Cannot decrease level: too many points already used in stats!');
+                e.target.value = previousLevel;
+                return;
+            }
+
             previousLevel = newLevel;
             updateTotalPoints();
         });
+
+        // Set minimum level to 0
+        levelInput.min = 0;
     }
-}
-
-function updateTotalPoints() {
-    const level = parseInt(document.getElementById('char-level')?.value) || 0;
-    const levelPoints = (level - previousLevel) * POINTS_PER_LEVEL;
-    
-    // Calculate used points
-    const usedPoints = STAT_FIELDS.reduce((total, stat) => {
-        const input = document.getElementById(`char-${stat}`);
-        const value = parseInt(input?.value) || 0;
-        return total + value;
-    }, 0);
-
-    // Update total points
-    totalPoints = DEFAULT_POINTS + levelPoints - usedPoints;
-    const totalPointsElement = document.getElementById('total-points');
-    if (totalPointsElement) {
-        totalPointsElement.textContent = totalPoints;
-    }
-
-    // Disable stat inputs if no points available
-    STAT_FIELDS.forEach(stat => {
-        const input = document.getElementById(`char-${stat}`);
-        if (!input) return;
-
-        const currentValue = parseInt(input.value) || 0;
-        input.max = currentValue + totalPoints;
-        if (totalPoints <= 0 && currentValue === 0) {
-            input.disabled = true;
-        } else {
-            input.disabled = false;
-        }
-    });
 }
 
 // Initialize points system when DOM is loaded
