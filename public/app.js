@@ -449,74 +449,133 @@ async function viewCharacterDetails(characterId) {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to load character details');
+            throw new Error('Failed to fetch character details');
         }
 
         const character = await response.json();
-        
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4';
-        modal.innerHTML = `
-            <div class="bg-gray-800 p-6 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-bold">${character.name || 'Unnamed Character'}'s Details</h2>
-                    <button onclick="this.closest('.fixed').remove()" 
-                            class="text-gray-400 hover:text-white text-xl font-bold">×</button>
+
+        // Calculate total and available points
+        const level = character.level || 0;
+        const maxPoints = calculateTotalPointsForLevel(level);
+        const usedPoints = STAT_FIELDS.reduce((total, stat) => {
+            const value = character[stat.replace('-', '')] || 0;
+            return total + value;
+        }, 0);
+        const availablePoints = maxPoints - usedPoints;
+
+        const modalContent = `
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold">${character.name || 'Unnamed Character'}</h2>
+                    <button onclick="deleteCharacter('${character._id}')" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md transition-colors">Delete</button>
                 </div>
-                <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-gray-400">Role</p>
+                        <p>${character.role || 'N/A'}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-400">Gender</p>
+                        <p>${character.gender || 'N/A'}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-400">Age</p>
+                        <p>${character.age || 'N/A'}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-400">Class</p>
+                        <p>${character.class || 'N/A'}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-400">Level</p>
+                        <p>${character.level || '0'}</p>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-700 pt-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-xl font-semibold">Stats</h3>
+                        <div class="text-sm">
+                            <span>Available Points: </span>
+                            <span class="font-bold text-blue-400">${availablePoints}</span>
+                            <span class="text-gray-400 ml-2">(Total: ${maxPoints})</span>
+                        </div>
+                    </div>
                     <div class="grid grid-cols-2 gap-4">
-                        <div>Role: ${character.role || 'N/A'}</div>
-                        <div>Class: ${character.class || 'N/A'}</div>
-                        <div>Level: ${character.level || 'N/A'}</div>
-                        <div>Gender: ${character.gender || 'N/A'}</div>
-                        <div>Age: ${character.age || 'N/A'}</div>
-                    </div>
-                    
-                    <div class="border-t border-gray-700 pt-4">
-                        <h3 class="font-semibold mb-2">Stats</h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>Strength: ${character.strength || 'N/A'}</div>
-                            <div>Health: ${character.health || 'N/A'}</div>
-                            <div>Speed: ${character.speed || 'N/A'}</div>
-                            <div>Stamina: ${character.stamina || 'N/A'}</div>
-                            <div>Cursed Energy: ${character.cursedEnergy || 'N/A'}</div>
-                            <div>Intelligence: ${character.intelligence || 'N/A'}</div>
-                            <div>Technique: ${character.technique || 'N/A'}</div>
+                        <div>
+                            <p class="text-gray-400">Strength</p>
+                            <p>${character.strength || '0'}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Health</p>
+                            <p>${character.health || '0'}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Speed</p>
+                            <p>${character.speed || '0'}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Stamina</p>
+                            <p>${character.stamina || '0'}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Cursed Energy</p>
+                            <p>${character['cursed-energy'] || '0'}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Intelligence</p>
+                            <p>${character.intelligence || '0'}</p>
                         </div>
                     </div>
-                    
-                    <div class="border-t border-gray-700 pt-4">
-                        <h3 class="font-semibold mb-2">Back Story</h3>
-                        <p>${character.backstory || 'No backstory available'}</p>
-                    </div>
-                    
-                    <div class="border-t border-gray-700 pt-4">
-                        <h3 class="font-semibold mb-2">Inventory</h3>
-                        <div class="space-y-2">
-                            ${character.inventory?.length ? character.inventory.map(item => `
-                                <div class="bg-gray-700 p-2 rounded">
-                                    <strong>${item.name}</strong>: ${item.description}
-                                </div>
-                            `).join('') : 'No items'}
-                        </div>
-                    </div>
-                    
-                    <div class="border-t border-gray-700 pt-4">
-                        <h3 class="font-semibold mb-2">Skills/Techniques</h3>
-                        <div class="space-y-2">
-                            ${character.skills?.length ? character.skills.map(skill => `
-                                <div class="bg-gray-700 p-2 rounded">
-                                    <strong>${skill.name}</strong>: ${skill.description}
-                                </div>
-                            `).join('') : 'No skills'}
-                        </div>
-                    </div>
+                </div>
+
+                <div class="border-t border-gray-700 pt-4">
+                    <h3 class="text-xl font-semibold mb-2">Technique</h3>
+                    <p>${character.technique || 'N/A'}</p>
+                </div>
+
+                <div class="border-t border-gray-700 pt-4">
+                    <h3 class="text-xl font-semibold mb-2">Backstory</h3>
+                    <p>${character.backstory || 'No backstory available.'}</p>
+                </div>
+
+                <div class="border-t border-gray-700 pt-4">
+                    <h3 class="text-xl font-semibold mb-2">Inventory</h3>
+                    ${character.inventory && character.inventory.length > 0 
+                        ? `<ul class="list-disc pl-5">
+                            ${character.inventory.map(item => `
+                                <li>
+                                    <span class="font-medium">${item.name}</span>
+                                    ${item.description ? `: ${item.description}` : ''}
+                                </li>
+                            `).join('')}
+                           </ul>`
+                        : '<p>No items in inventory.</p>'
+                    }
+                </div>
+
+                <div class="border-t border-gray-700 pt-4">
+                    <h3 class="text-xl font-semibold mb-2">Skills</h3>
+                    ${character.skills && character.skills.length > 0
+                        ? `<ul class="list-disc pl-5">
+                            ${character.skills.map(skill => `
+                                <li>
+                                    <span class="font-medium">${skill.name}</span>
+                                    ${skill.description ? `: ${skill.description}` : ''}
+                                </li>
+                            `).join('')}
+                           </ul>`
+                        : '<p>No skills learned.</p>'
+                    }
                 </div>
             </div>
         `;
-        document.body.appendChild(modal);
+
+        const modalContainer = document.getElementById('modal-container');
+        modalContainer.innerHTML = modalContent;
+        modalContainer.style.display = 'block';
     } catch (error) {
-        alert('Failed to load character details: ' + error.message);
+        alert('Failed to view character details: ' + error.message);
     }
 }
 
