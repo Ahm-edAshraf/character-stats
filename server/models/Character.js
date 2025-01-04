@@ -26,7 +26,10 @@ const characterSchema = new mongoose.Schema({
     health: Number,
     speed: Number,
     stamina: Number,
-    cursedEnergy: Number,
+    cursedEnergy: {
+        type: Number,
+        alias: 'cursed-energy'
+    },
     technique: String,
     intelligence: Number,
     backstory: String,
