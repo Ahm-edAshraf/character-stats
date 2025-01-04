@@ -464,68 +464,126 @@ async function viewCharacterDetails(characterId) {
         const availablePoints = maxPoints - usedPoints;
 
         const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4';
+        modal.className = 'fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50';
         modal.innerHTML = `
-            <div class="bg-gray-800 p-6 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-bold">${character.name || 'Unnamed Character'}'s Details</h2>
-                    <button onclick="this.closest('.fixed').remove()" 
-                            class="text-gray-400 hover:text-white text-xl font-bold">×</button>
-                </div>
-                <div class="space-y-4">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>Role: ${character.role || 'N/A'}</div>
-                        <div>Class: ${character.class || 'N/A'}</div>
-                        <div>Level: ${character.level || '0'}</div>
-                        <div>Gender: ${character.gender || 'N/A'}</div>
-                        <div>Age: ${character.age || 'N/A'}</div>
+            <div class="bg-gray-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative shadow-2xl border border-gray-700">
+                <!-- Header -->
+                <div class="bg-gray-900 px-6 py-4 rounded-t-xl border-b border-gray-700 sticky top-0 z-10">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl font-bold text-white">${character.name || 'Unnamed Character'}</h2>
+                        <button onclick="this.closest('.fixed').remove()" 
+                                class="text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg p-2 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
                     </div>
-                    
-                    <div class="border-t border-gray-700 pt-4">
-                        <div class="flex justify-between items-center mb-2">
-                            <h3 class="font-semibold">Stats</h3>
-                            <div class="text-sm">
-                                <span>Available Points: </span>
+                </div>
+
+                <!-- Content -->
+                <div class="p-6 space-y-6">
+                    <!-- Basic Info -->
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="bg-gray-700/30 p-4 rounded-lg">
+                            <p class="text-gray-400 text-sm mb-1">Role</p>
+                            <p class="font-medium">${character.role || 'N/A'}</p>
+                        </div>
+                        <div class="bg-gray-700/30 p-4 rounded-lg">
+                            <p class="text-gray-400 text-sm mb-1">Class</p>
+                            <p class="font-medium">${character.class || 'N/A'}</p>
+                        </div>
+                        <div class="bg-gray-700/30 p-4 rounded-lg">
+                            <p class="text-gray-400 text-sm mb-1">Level</p>
+                            <p class="font-medium">${character.level || '0'}</p>
+                        </div>
+                        <div class="bg-gray-700/30 p-4 rounded-lg">
+                            <p class="text-gray-400 text-sm mb-1">Gender</p>
+                            <p class="font-medium">${character.gender || 'N/A'}</p>
+                        </div>
+                        <div class="bg-gray-700/30 p-4 rounded-lg">
+                            <p class="text-gray-400 text-sm mb-1">Age</p>
+                            <p class="font-medium">${character.age || 'N/A'}</p>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="bg-gray-700/20 rounded-xl p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-semibold text-white">Stats</h3>
+                            <div class="bg-blue-900/50 px-4 py-2 rounded-lg">
+                                <span class="text-gray-300">Available Points: </span>
                                 <span class="font-bold text-blue-400">${availablePoints}</span>
                                 <span class="text-gray-400 ml-2">(Total: ${maxPoints})</span>
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div>Strength: ${character.strength || '0'}</div>
-                            <div>Health: ${character.health || '0'}</div>
-                            <div>Speed: ${character.speed || '0'}</div>
-                            <div>Stamina: ${character.stamina || '0'}</div>
-                            <div>Cursed Energy: ${character['cursed-energy'] || '0'}</div>
-                            <div>Intelligence: ${character.intelligence || '0'}</div>
-                            <div>Technique: ${character.technique || 'N/A'}</div>
+                            <div class="bg-gray-700/30 p-4 rounded-lg">
+                                <p class="text-gray-400 text-sm mb-1">Strength</p>
+                                <p class="font-medium">${character.strength || '0'}</p>
+                            </div>
+                            <div class="bg-gray-700/30 p-4 rounded-lg">
+                                <p class="text-gray-400 text-sm mb-1">Health</p>
+                                <p class="font-medium">${character.health || '0'}</p>
+                            </div>
+                            <div class="bg-gray-700/30 p-4 rounded-lg">
+                                <p class="text-gray-400 text-sm mb-1">Speed</p>
+                                <p class="font-medium">${character.speed || '0'}</p>
+                            </div>
+                            <div class="bg-gray-700/30 p-4 rounded-lg">
+                                <p class="text-gray-400 text-sm mb-1">Stamina</p>
+                                <p class="font-medium">${character.stamina || '0'}</p>
+                            </div>
+                            <div class="bg-gray-700/30 p-4 rounded-lg">
+                                <p class="text-gray-400 text-sm mb-1">Cursed Energy</p>
+                                <p class="font-medium">${character['cursed-energy'] || '0'}</p>
+                            </div>
+                            <div class="bg-gray-700/30 p-4 rounded-lg">
+                                <p class="text-gray-400 text-sm mb-1">Intelligence</p>
+                                <p class="font-medium">${character.intelligence || '0'}</p>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="border-t border-gray-700 pt-4">
-                        <h3 class="font-semibold mb-2">Back Story</h3>
-                        <p>${character.backstory || 'No backstory available'}</p>
+
+                    <!-- Technique -->
+                    <div class="bg-gray-700/20 rounded-xl p-6">
+                        <h3 class="text-xl font-semibold mb-3 text-white">Technique</h3>
+                        <p class="text-gray-300">${character.technique || 'N/A'}</p>
                     </div>
-                    
-                    <div class="border-t border-gray-700 pt-4">
-                        <h3 class="font-semibold mb-2">Inventory</h3>
-                        <div class="space-y-2">
-                            ${character.inventory?.length ? character.inventory.map(item => `
-                                <div class="bg-gray-700 p-2 rounded">
-                                    <strong>${item.name}</strong>: ${item.description}
-                                </div>
-                            `).join('') : 'No items'}
-                        </div>
+
+                    <!-- Back Story -->
+                    <div class="bg-gray-700/20 rounded-xl p-6">
+                        <h3 class="text-xl font-semibold mb-3 text-white">Back Story</h3>
+                        <p class="text-gray-300">${character.backstory || 'No backstory available'}</p>
                     </div>
-                    
-                    <div class="border-t border-gray-700 pt-4">
-                        <h3 class="font-semibold mb-2">Skills/Techniques</h3>
-                        <div class="space-y-2">
-                            ${character.skills?.length ? character.skills.map(skill => `
-                                <div class="bg-gray-700 p-2 rounded">
-                                    <strong>${skill.name}</strong>: ${skill.description}
-                                </div>
-                            `).join('') : 'No skills'}
-                        </div>
+
+                    <!-- Inventory -->
+                    <div class="bg-gray-700/20 rounded-xl p-6">
+                        <h3 class="text-xl font-semibold mb-3 text-white">Inventory</h3>
+                        ${character.inventory?.length ? `
+                            <div class="space-y-2">
+                                ${character.inventory.map(item => `
+                                    <div class="bg-gray-700/50 p-4 rounded-lg">
+                                        <p class="font-medium text-white">${item.name}</p>
+                                        ${item.description ? `<p class="text-gray-400 mt-1 text-sm">${item.description}</p>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : '<p class="text-gray-400">No items</p>'}
+                    </div>
+
+                    <!-- Skills -->
+                    <div class="bg-gray-700/20 rounded-xl p-6">
+                        <h3 class="text-xl font-semibold mb-3 text-white">Skills</h3>
+                        ${character.skills?.length ? `
+                            <div class="space-y-2">
+                                ${character.skills.map(skill => `
+                                    <div class="bg-gray-700/50 p-4 rounded-lg">
+                                        <p class="font-medium text-white">${skill.name}</p>
+                                        ${skill.description ? `<p class="text-gray-400 mt-1 text-sm">${skill.description}</p>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : '<p class="text-gray-400">No skills</p>'}
                     </div>
                 </div>
             </div>
