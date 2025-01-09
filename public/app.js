@@ -541,13 +541,11 @@ async function viewCharacterDetails(characterId) {
                                 <p class="text-gray-400 text-sm mb-1">Intelligence</p>
                                 <p class="font-medium">${character.intelligence || '0'}</p>
                             </div>
+                            <div class="bg-gray-700/30 p-4 rounded-lg">
+                                <p class="text-gray-400 text-sm mb-1">Technique</p>
+                                <p class="font-medium">${character.technique || '0'}</p>
+                            </div>
                         </div>
-                    </div>
-
-                    <!-- Technique -->
-                    <div class="bg-gray-700/20 rounded-xl p-6">
-                        <h3 class="text-xl font-semibold mb-3 text-white">Technique</h3>
-                        <p class="text-gray-300">${character.technique || 'N/A'}</p>
                     </div>
 
                     <!-- Back Story -->
@@ -622,7 +620,7 @@ async function deleteCharacter(characterId) {
 // Points system
 const DEFAULT_POINTS = 50;
 const POINTS_PER_LEVEL = 5;
-const STAT_FIELDS = ['strength', 'health', 'speed', 'stamina', 'cursed-energy', 'intelligence'];
+const STAT_FIELDS = ['strength', 'health', 'speed', 'stamina', 'cursed-energy', 'intelligence', 'technique'];
 
 let totalPoints = DEFAULT_POINTS;
 let previousLevel = 0;

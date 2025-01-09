@@ -30,7 +30,7 @@ const characterSchema = new mongoose.Schema({
         type: Number,
         alias: 'cursed-energy'
     },
-    technique: String,
+    technique: Number,
     intelligence: Number,
     backstory: String,
     inventory: [inventoryItemSchema],
