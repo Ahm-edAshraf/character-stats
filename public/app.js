@@ -458,8 +458,11 @@ async function viewCharacterDetails(characterId) {
         const level = character.level || 0;
         const maxPoints = calculateTotalPointsForLevel(level);
         const usedPoints = STAT_FIELDS.reduce((total, stat) => {
-            const value = character[stat.replace('-', '')] || 0;
-            return total + value;
+            // Handle cursed-energy specially
+            if (stat === 'cursed-energy') {
+                return total + (character.cursedEnergy || 0);
+            }
+            return total + (character[stat] || 0);
         }, 0);
         const availablePoints = maxPoints - usedPoints;
 
@@ -535,13 +538,13 @@ async function viewCharacterDetails(characterId) {
                             </div>
                             <div class="bg-gray-700/30 p-4 rounded-lg">
                                 <p class="text-gray-400 text-sm mb-1">Cursed Energy</p>
-                                <p class="font-medium">${character['cursed-energy'] || '0'}</p>
+                                <p class="font-medium">${character.cursedEnergy || '0'}</p>
                             </div>
                             <div class="bg-gray-700/30 p-4 rounded-lg">
                                 <p class="text-gray-400 text-sm mb-1">Intelligence</p>
                                 <p class="font-medium">${character.intelligence || '0'}</p>
                             </div>
-                            <div class="bg-gray-700/30 p-4 rounded-lg">
+                            <div class="bg-gray-700/30 p-4 rounded-lg col-span-2">
                                 <p class="text-gray-400 text-sm mb-1">Technique</p>
                                 <p class="font-medium">${character.technique || '0'}</p>
                             </div>
