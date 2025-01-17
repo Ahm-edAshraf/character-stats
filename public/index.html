@@ -137,30 +137,42 @@
                 <!-- Stats -->
                 <div class="border-t border-gray-700 pt-6">
                     <h2 class="text-xl font-semibold mb-4">Stats</h2>
+                    <div class="flex justify-between items-center mb-4">
+                        <span>Available Points: <span id="available-points">50</span></span>
+                        <span>Total Points: <span id="total-points">50</span></span>
+                    </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium mb-1">Strength</label>
-                            <input type="number" id="char-strength" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <label class="block text-sm font-medium mb-1">Ninjutsu</label>
+                            <input type="number" id="char-ninjutsu" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="updatePoints()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Taijutsu</label>
+                            <input type="number" id="char-taijutsu" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="updatePoints()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Genjutsu</label>
+                            <input type="number" id="char-genjutsu" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="updatePoints()">
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1">Health</label>
-                            <input type="number" id="char-health" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="number" id="char-health" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="updatePoints()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Strength</label>
+                            <input type="number" id="char-strength" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="updatePoints()">
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1">Speed</label>
-                            <input type="number" id="char-speed" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="number" id="char-speed" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="updatePoints()">
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1">Stamina</label>
-                            <input type="number" id="char-stamina" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="number" id="char-stamina" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="updatePoints()">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Cursed Energy</label>
-                            <input type="number" id="char-cursed-energy" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Intelligence</label>
-                            <input type="number" id="char-intelligence" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <label class="block text-sm font-medium mb-1">Hand Seals</label>
+                            <input type="number" id="char-hand-seals" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="updatePoints()">
                         </div>
                         <div class="col-span-2">
                             <label class="block text-sm font-medium mb-1">Technique</label>

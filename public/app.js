@@ -185,23 +185,84 @@ async function loadCharacter() {
     }
 }
 
+// Points system
+function calculateTotalPoints(level) {
+    return 50 + (level * 5); // Base 50 points + 5 points per level
+}
+
+function updatePoints() {
+    const level = parseInt(document.getElementById('char-level').value) || 0;
+    const totalPoints = calculateTotalPoints(level);
+    
+    const stats = [
+        'ninjutsu', 'taijutsu', 'genjutsu', 'health', 
+        'strength', 'speed', 'stamina', 'hand-seals'
+    ];
+    
+    let usedPoints = 0;
+    stats.forEach(stat => {
+        const value = parseInt(document.getElementById(`char-${stat}`).value) || 0;
+        usedPoints += value;
+    });
+
+    const availablePoints = totalPoints - usedPoints;
+    document.getElementById('available-points').textContent = availablePoints;
+    document.getElementById('total-points').textContent = totalPoints;
+
+    // Disable save button if points are overspent
+    const saveButton = document.querySelector('button[onclick="saveCharacter()"]');
+    if (availablePoints < 0) {
+        saveButton.disabled = true;
+        saveButton.classList.add('opacity-50', 'cursor-not-allowed');
+        alert('You have used more points than available!');
+    } else {
+        saveButton.disabled = false;
+        saveButton.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+}
+
+// Add level change handler
+document.getElementById('char-level').addEventListener('change', updatePoints);
+
 // Save character data
 async function saveCharacter() {
     const characterId = document.getElementById('char-id').value;
+    
+    const level = parseInt(document.getElementById('char-level').value) || 0;
+    const totalPoints = calculateTotalPoints(level);
+    
+    const stats = [
+        'ninjutsu', 'taijutsu', 'genjutsu', 'health', 
+        'strength', 'speed', 'stamina', 'hand-seals'
+    ];
+    
+    let usedPoints = 0;
+    stats.forEach(stat => {
+        const value = parseInt(document.getElementById(`char-${stat}`).value) || 0;
+        usedPoints += value;
+    });
+
+    if (usedPoints > totalPoints) {
+        alert('You have used more points than available!');
+        return;
+    }
+
     const character = {
         name: document.getElementById('char-name').value,
         role: document.getElementById('char-role').value,
         gender: document.getElementById('char-gender').value,
         age: document.getElementById('char-age').value,
         class: document.getElementById('char-class').value,
-        level: document.getElementById('char-level').value,
-        strength: document.getElementById('char-strength').value,
+        level: level,
+        ninjutsu: document.getElementById('char-ninjutsu').value,
+        taijutsu: document.getElementById('char-taijutsu').value,
+        genjutsu: document.getElementById('char-genjutsu').value,
         health: document.getElementById('char-health').value,
+        strength: document.getElementById('char-strength').value,
         speed: document.getElementById('char-speed').value,
         stamina: document.getElementById('char-stamina').value,
-        cursedEnergy: document.getElementById('char-cursed-energy').value,
+        handSeals: document.getElementById('char-hand-seals').value,
         technique: document.getElementById('char-technique').value,
-        intelligence: document.getElementById('char-intelligence').value,
         backstory: document.getElementById('char-backstory').value,
         inventory: getInventoryItems(),
         skills: getSkillItems()
@@ -233,22 +294,26 @@ async function saveCharacter() {
 
 // Populate character form with data
 function populateCharacterForm(character) {
-    // Store the character ID in a hidden field
     document.getElementById('char-id').value = character._id || '';
     document.getElementById('char-name').value = character.name || '';
     document.getElementById('char-role').value = character.role || '';
     document.getElementById('char-gender').value = character.gender || '';
     document.getElementById('char-age').value = character.age || '';
     document.getElementById('char-class').value = character.class || '';
-    document.getElementById('char-level').value = character.level || '';
-    document.getElementById('char-strength').value = character.strength || '';
-    document.getElementById('char-health').value = character.health || '';
-    document.getElementById('char-speed').value = character.speed || '';
-    document.getElementById('char-stamina').value = character.stamina || '';
-    document.getElementById('char-cursed-energy').value = character.cursedEnergy || '';
+    document.getElementById('char-level').value = character.level || '0';
+    document.getElementById('char-ninjutsu').value = character.ninjutsu || '0';
+    document.getElementById('char-taijutsu').value = character.taijutsu || '0';
+    document.getElementById('char-genjutsu').value = character.genjutsu || '0';
+    document.getElementById('char-health').value = character.health || '0';
+    document.getElementById('char-strength').value = character.strength || '0';
+    document.getElementById('char-speed').value = character.speed || '0';
+    document.getElementById('char-stamina').value = character.stamina || '0';
+    document.getElementById('char-hand-seals').value = character.handSeals || '0';
     document.getElementById('char-technique').value = character.technique || '';
-    document.getElementById('char-intelligence').value = character.intelligence || '';
     document.getElementById('char-backstory').value = character.backstory || '';
+
+    // Update points display
+    updatePoints();
 
     // Populate inventory and skills
     const inventoryList = document.getElementById('inventory-list');
@@ -403,26 +468,30 @@ async function loadAllCharacters() {
 
         characters.forEach(character => {
             const characterDiv = document.createElement('div');
-            characterDiv.className = 'bg-gray-700 p-4 rounded-lg';
+            characterDiv.className = 'bg-gray-700 p-4 rounded-md';
             characterDiv.innerHTML = `
                 <div class="flex justify-between items-center mb-2">
-                    <h3 class="text-xl font-semibold">${character.name || 'Unnamed Character'}</h3>
+                    <h3 class="text-lg font-semibold">${character.name || 'Unnamed'}</h3>
                     <span class="text-gray-400">${character.user.email}</span>
                 </div>
-                <div class="grid grid-cols-2 gap-4 text-sm">
-                    <div>Role: ${character.role || 'N/A'}</div>
-                    <div>Class: ${character.class || 'N/A'}</div>
+                <div class="grid grid-cols-2 gap-2 text-sm mb-2">
                     <div>Level: ${character.level || 'N/A'}</div>
-                    <div>Gender: ${character.gender || 'N/A'}</div>
+                    <div>Class: ${character.class || 'N/A'}</div>
                 </div>
-                <button onclick="viewCharacterDetails('${character._id}')" 
-                        class="mt-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md w-full">
-                    View Details
-                </button>
-                <button onclick="deleteCharacter('${character._id}')" 
-                        class="mt-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md w-full">
-                    Delete Character
-                </button>
+                <div class="grid grid-cols-2 gap-2 text-sm">
+                    <div>Ninjutsu: ${character.ninjutsu || '0'}</div>
+                    <div>Taijutsu: ${character.taijutsu || '0'}</div>
+                    <div>Genjutsu: ${character.genjutsu || '0'}</div>
+                    <div>Health: ${character.health || '0'}</div>
+                    <div>Strength: ${character.strength || '0'}</div>
+                    <div>Speed: ${character.speed || '0'}</div>
+                    <div>Stamina: ${character.stamina || '0'}</div>
+                    <div>Hand Seals: ${character.handSeals || '0'}</div>
+                </div>
+                <div class="mt-2">
+                    <button onclick="viewCharacterDetails('${character._id}')" class="text-blue-400 hover:text-blue-500">View Details</button>
+                    <button onclick="deleteCharacter('${character._id}')" class="text-red-400 hover:text-red-500 ml-2">Delete</button>
+                </div>
             `;
             userList.appendChild(characterDiv);
         });
@@ -442,15 +511,14 @@ async function viewCharacterDetails(characterId) {
         }
 
         const character = await response.json();
-        
         const modal = document.createElement('div');
         modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4';
         modal.innerHTML = `
             <div class="bg-gray-800 p-6 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-bold">${character.name || 'Unnamed Character'}'s Details</h2>
+                    <h2 class="text-2xl font-bold">${character.name}'s Details</h2>
                     <button onclick="this.closest('.fixed').remove()" 
-                            class="text-gray-400 hover:text-white text-xl font-bold">×</button>
+                            class="text-gray-400 hover:text-white">×</button>
                 </div>
                 <div class="space-y-4">
                     <div class="grid grid-cols-2 gap-4">
@@ -464,40 +532,42 @@ async function viewCharacterDetails(characterId) {
                     <div class="border-t border-gray-700 pt-4">
                         <h3 class="font-semibold mb-2">Stats</h3>
                         <div class="grid grid-cols-2 gap-4">
-                            <div>Strength: ${character.strength || 'N/A'}</div>
-                            <div>Health: ${character.health || 'N/A'}</div>
-                            <div>Speed: ${character.speed || 'N/A'}</div>
-                            <div>Stamina: ${character.stamina || 'N/A'}</div>
-                            <div>Cursed Energy: ${character.cursedEnergy || 'N/A'}</div>
-                            <div>Intelligence: ${character.intelligence || 'N/A'}</div>
-                            <div>Technique: ${character.technique || 'N/A'}</div>
+                            <div>Ninjutsu: ${character.ninjutsu || '0'}</div>
+                            <div>Taijutsu: ${character.taijutsu || '0'}</div>
+                            <div>Genjutsu: ${character.genjutsu || '0'}</div>
+                            <div>Health: ${character.health || '0'}</div>
+                            <div>Strength: ${character.strength || '0'}</div>
+                            <div>Speed: ${character.speed || '0'}</div>
+                            <div>Stamina: ${character.stamina || '0'}</div>
+                            <div>Hand Seals: ${character.handSeals || '0'}</div>
+                            <div class="col-span-2">Technique: ${character.technique || 'None'}</div>
                         </div>
                     </div>
                     
                     <div class="border-t border-gray-700 pt-4">
                         <h3 class="font-semibold mb-2">Back Story</h3>
-                        <p>${character.backstory || 'No backstory available'}</p>
+                        <p>${character.backstory || 'No backstory provided'}</p>
                     </div>
                     
                     <div class="border-t border-gray-700 pt-4">
                         <h3 class="font-semibold mb-2">Inventory</h3>
                         <div class="space-y-2">
-                            ${character.inventory?.length ? character.inventory.map(item => `
+                            ${character.inventory?.map(item => `
                                 <div class="bg-gray-700 p-2 rounded">
                                     <strong>${item.name}</strong>: ${item.description}
                                 </div>
-                            `).join('') : 'No items'}
+                            `).join('') || 'No items'}
                         </div>
                     </div>
                     
                     <div class="border-t border-gray-700 pt-4">
                         <h3 class="font-semibold mb-2">Skills/Techniques</h3>
                         <div class="space-y-2">
-                            ${character.skills?.length ? character.skills.map(skill => `
+                            ${character.skills?.map(skill => `
                                 <div class="bg-gray-700 p-2 rounded">
                                     <strong>${skill.name}</strong>: ${skill.description}
                                 </div>
-                            `).join('') : 'No skills'}
+                            `).join('') || 'No skills'}
                         </div>
                     </div>
                 </div>
