@@ -252,7 +252,7 @@ async function saveCharacter() {
         role: document.getElementById('char-role').value,
         gender: document.getElementById('char-gender').value,
         age: document.getElementById('char-age').value,
-        class: document.getElementById('char-class').value,
+        rank: document.getElementById('char-rank').value,
         level: level,
         ninjutsu: document.getElementById('char-ninjutsu').value,
         taijutsu: document.getElementById('char-taijutsu').value,
@@ -262,7 +262,6 @@ async function saveCharacter() {
         speed: document.getElementById('char-speed').value,
         stamina: document.getElementById('char-stamina').value,
         handSeals: document.getElementById('char-hand-seals').value,
-        technique: document.getElementById('char-technique').value,
         backstory: document.getElementById('char-backstory').value,
         inventory: getInventoryItems(),
         skills: getSkillItems()
@@ -299,7 +298,7 @@ function populateCharacterForm(character) {
     document.getElementById('char-role').value = character.role || '';
     document.getElementById('char-gender').value = character.gender || '';
     document.getElementById('char-age').value = character.age || '';
-    document.getElementById('char-class').value = character.class || '';
+    document.getElementById('char-rank').value = character.rank || 'Academy Student';
     document.getElementById('char-level').value = character.level || '0';
     document.getElementById('char-ninjutsu').value = character.ninjutsu || '0';
     document.getElementById('char-taijutsu').value = character.taijutsu || '0';
@@ -309,7 +308,6 @@ function populateCharacterForm(character) {
     document.getElementById('char-speed').value = character.speed || '0';
     document.getElementById('char-stamina').value = character.stamina || '0';
     document.getElementById('char-hand-seals').value = character.handSeals || '0';
-    document.getElementById('char-technique').value = character.technique || '';
     document.getElementById('char-backstory').value = character.backstory || '';
 
     // Update points display
@@ -476,7 +474,7 @@ async function loadAllCharacters() {
                 </div>
                 <div class="grid grid-cols-2 gap-2 text-sm mb-2">
                     <div>Level: ${character.level || 'N/A'}</div>
-                    <div>Class: ${character.class || 'N/A'}</div>
+                    <div>Rank: ${character.rank || 'Academy Student'}</div>
                 </div>
                 <div class="grid grid-cols-2 gap-2 text-sm">
                     <div>Ninjutsu: ${character.ninjutsu || '0'}</div>
@@ -488,9 +486,15 @@ async function loadAllCharacters() {
                     <div>Stamina: ${character.stamina || '0'}</div>
                     <div>Hand Seals: ${character.handSeals || '0'}</div>
                 </div>
-                <div class="mt-2">
-                    <button onclick="viewCharacterDetails('${character._id}')" class="text-blue-400 hover:text-blue-500">View Details</button>
-                    <button onclick="deleteCharacter('${character._id}')" class="text-red-400 hover:text-red-500 ml-2">Delete</button>
+                <div class="mt-4 flex justify-end space-x-2">
+                    <button onclick="viewCharacterDetails('${character._id}')" 
+                            class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md transition-colors">
+                        View Details
+                    </button>
+                    <button onclick="deleteCharacter('${character._id}')" 
+                            class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md transition-colors">
+                        Delete
+                    </button>
                 </div>
             `;
             userList.appendChild(characterDiv);
@@ -523,7 +527,7 @@ async function viewCharacterDetails(characterId) {
                 <div class="space-y-4">
                     <div class="grid grid-cols-2 gap-4">
                         <div>Role: ${character.role || 'N/A'}</div>
-                        <div>Class: ${character.class || 'N/A'}</div>
+                        <div>Rank: ${character.rank || 'Academy Student'}</div>
                         <div>Level: ${character.level || 'N/A'}</div>
                         <div>Gender: ${character.gender || 'N/A'}</div>
                         <div>Age: ${character.age || 'N/A'}</div>
@@ -540,7 +544,6 @@ async function viewCharacterDetails(characterId) {
                             <div>Speed: ${character.speed || '0'}</div>
                             <div>Stamina: ${character.stamina || '0'}</div>
                             <div>Hand Seals: ${character.handSeals || '0'}</div>
-                            <div class="col-span-2">Technique: ${character.technique || 'None'}</div>
                         </div>
                     </div>
                     
