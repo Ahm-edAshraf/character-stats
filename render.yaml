@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: character-stats-backend
+    env: node
+    buildCommand: npm install
+    startCommand: node server/server.js
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: NODE_ENV
+        value: production
+    
+  - type: static
+    name: character-stats-frontend
+    buildCommand: npm install
+    staticPublishPath: ./public
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Stats</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <div id="auth-container" class="container mx-auto px-4 py-8">
+        <div class="max-w-md mx-auto bg-gray-800 rounded-lg shadow-lg p-8">
+            <h1 class="text-3xl font-bold text-center mb-8">Character Stats</h1>
+            
+            <div id="login-form" class="space-y-4">
+                <h2 class="text-2xl font-semibold mb-4">Login</h2>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Email</label>
+                    <input type="email" id="login-email" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Password</label>
+                    <input type="password" id="login-password" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <button onclick="login()" class="w-full bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md transition-colors">Login</button>
+                <p class="text-center">Don't have an account? <a href="#" onclick="showRegisterForm()" class="text-blue-400 hover:underline">Register</a></p>
+                <p class="text-center"><a href="#" onclick="showResetForm()" class="text-blue-400 hover:underline">Forgot Password?</a></p>
+            </div>
+
+            <div id="register-form" class="space-y-4" style="display: none;">
+                <h2 class="text-2xl font-semibold mb-4">Register</h2>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Email</label>
+                    <input type="email" id="register-email" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Password</label>
+                    <input type="password" id="register-password" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Security Question</label>
+                    <select id="security-question" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select a security question</option>
+                        <option value="What was your first pet's name?">What was your first pet's name?</option>
+                        <option value="What city were you born in?">What city were you born in?</option>
+                        <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                        <option value="What was the name of your first school?">What was the name of your first school?</option>
+                        <option value="What is your favorite book?">What is your favorite book?</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Security Answer</label>
+                    <input type="text" id="security-answer" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Your answer">
+                </div>
+                <button onclick="register()" class="w-full bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md transition-colors">Register</button>
+                <p class="text-center">Already have an account? <a href="#" onclick="showLoginForm()" class="text-blue-400 hover:underline">Login</a></p>
+            </div>
+
+            <div id="reset-form" class="space-y-4" style="display: none;">
+                <h2 class="text-2xl font-semibold mb-4">Reset Password</h2>
+                <div id="reset-step-1">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Email</label>
+                        <input type="email" id="reset-email" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium mb-1">Security Question</label>
+                        <select id="reset-security-question" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select your security question</option>
+                            <option value="What was your first pet's name?">What was your first pet's name?</option>
+                            <option value="What city were you born in?">What city were you born in?</option>
+                            <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                            <option value="What was the name of your first school?">What was the name of your first school?</option>
+                            <option value="What is your favorite book?">What is your favorite book?</option>
+                        </select>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium mb-1">Security Answer</label>
+                        <input type="text" id="reset-security-answer" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Your answer">
+                    </div>
+                    <button onclick="requestPasswordReset()" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md transition-colors">Submit</button>
+                </div>
+                <div id="reset-step-2" class="space-y-4" style="display: none;">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">New Password</label>
+                        <input type="password" id="new-password" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <button onclick="resetPassword()" class="w-full bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md transition-colors">Reset Password</button>
+                </div>
+                <p class="text-center mt-4"><a href="#" onclick="showLoginForm()" class="text-blue-400 hover:underline">Back to Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="stats-container" class="container mx-auto px-4 py-8" style="display: none;">
+        <div class="max-w-4xl mx-auto bg-gray-800 rounded-lg shadow-lg p-8">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold">Character Sheet</h1>
+                <button onclick="logout()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md transition-colors">Logout</button>
+            </div>
+            
+            <div id="character-form" class="space-y-6">
+                <input type="hidden" id="char-id">
+                <!-- Basic Info -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Name</label>
+                        <input type="text" id="char-name" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Role</label>
+                        <input type="text" id="char-role" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Gender</label>
+                        <input type="text" id="char-gender" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Age</label>
+                        <input type="number" id="char-age" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Class</label>
+                        <input type="text" id="char-class" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Level</label>
+                        <input type="number" id="char-level" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="border-t border-gray-700 pt-6">
+                    <h2 class="text-xl font-semibold mb-4">Stats</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Strength</label>
+                            <input type="number" id="char-strength" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Health</label>
+                            <input type="number" id="char-health" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Speed</label>
+                            <input type="number" id="char-speed" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Stamina</label>
+                            <input type="number" id="char-stamina" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Cursed Energy</label>
+                            <input type="number" id="char-cursed-energy" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Intelligence</label>
+                            <input type="number" id="char-intelligence" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-sm font-medium mb-1">Technique</label>
+                            <input type="text" id="char-technique" class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Back Story -->
+                <div class="border-t border-gray-700 pt-6">
+                    <h2 class="text-xl font-semibold mb-4">Back Story</h2>
+                    <textarea id="char-backstory" class="w-full px-3 py-2 bg-gray-700 rounded-md h-32 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+
+                <!-- Inventory -->
+                <div class="border-t border-gray-700 pt-6">
+                    <h2 class="text-xl font-semibold mb-4">Inventory</h2>
+                    <div id="inventory-list" class="space-y-2"></div>
+                    <div class="flex gap-2 mt-2">
+                        <input type="text" id="new-item" placeholder="Item name" class="flex-1 px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="text" id="new-item-desc" placeholder="Description" class="flex-1 px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button onclick="addInventoryItem()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md">Add</button>
+                    </div>
+                </div>
+
+                <!-- Skills/Techniques -->
+                <div class="border-t border-gray-700 pt-6">
+                    <h2 class="text-xl font-semibold mb-4">Skills/Techniques</h2>
+                    <div id="skills-list" class="space-y-2"></div>
+                    <div class="flex gap-2 mt-2">
+                        <input type="text" id="new-skill" placeholder="Skill name" class="flex-1 px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="text" id="new-skill-desc" placeholder="Description" class="flex-1 px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button onclick="addSkill()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md">Add</button>
+                    </div>
+                </div>
+
+                <button onclick="saveCharacter()" class="w-full bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md mt-8">Save Character</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="admin-container" class="container mx-auto px-4 py-8" style="display: none;">
+        <div class="max-w-4xl mx-auto bg-gray-800 rounded-lg shadow-lg p-8">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold">Admin Panel</h1>
+                <button onclick="logout()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md">Logout</button>
+            </div>
+            <div id="user-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
