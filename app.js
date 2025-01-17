@@ -113,13 +113,15 @@ async function saveCharacter() {
         age: document.getElementById('char-age').value,
         class: document.getElementById('char-class').value,
         level: document.getElementById('char-level').value,
-        strength: document.getElementById('char-strength').value,
+        ninjutsu: document.getElementById('char-ninjutsu').value,
+        taijutsu: document.getElementById('char-taijutsu').value,
+        genjutsu: document.getElementById('char-genjutsu').value,
         health: document.getElementById('char-health').value,
+        strength: document.getElementById('char-strength').value,
         speed: document.getElementById('char-speed').value,
         stamina: document.getElementById('char-stamina').value,
-        cursedEnergy: document.getElementById('char-cursed-energy').value,
+        handSeals: document.getElementById('char-hand-seals').value,
         technique: document.getElementById('char-technique').value,
-        intelligence: document.getElementById('char-intelligence').value,
         backstory: document.getElementById('char-backstory').value,
         inventory: getInventoryItems(),
         skills: getSkillItems()
@@ -142,13 +144,15 @@ function populateCharacterForm(character) {
     document.getElementById('char-age').value = character.age || '';
     document.getElementById('char-class').value = character.class || '';
     document.getElementById('char-level').value = character.level || '';
-    document.getElementById('char-strength').value = character.strength || '';
+    document.getElementById('char-ninjutsu').value = character.ninjutsu || '';
+    document.getElementById('char-taijutsu').value = character.taijutsu || '';
+    document.getElementById('char-genjutsu').value = character.genjutsu || '';
     document.getElementById('char-health').value = character.health || '';
+    document.getElementById('char-strength').value = character.strength || '';
     document.getElementById('char-speed').value = character.speed || '';
     document.getElementById('char-stamina').value = character.stamina || '';
-    document.getElementById('char-cursed-energy').value = character.cursedEnergy || '';
+    document.getElementById('char-hand-seals').value = character.handSeals || '';
     document.getElementById('char-technique').value = character.technique || '';
-    document.getElementById('char-intelligence').value = character.intelligence || '';
     document.getElementById('char-backstory').value = character.backstory || '';
 
     // Populate inventory and skills
@@ -248,22 +252,30 @@ async function loadAllCharacters() {
             const character = JSON.parse(localStorage.getItem(key));
             
             const characterDiv = document.createElement('div');
-            characterDiv.className = 'bg-gray-700 p-4 rounded-lg';
+            characterDiv.className = 'bg-gray-700 p-4 rounded-md';
             characterDiv.innerHTML = `
                 <div class="flex justify-between items-center mb-2">
-                    <h3 class="text-xl font-semibold">${character.name}</h3>
+                    <h3 class="text-lg font-semibold">${character.name || 'Unnamed'}</h3>
                     <span class="text-gray-400">${email}</span>
                 </div>
-                <div class="grid grid-cols-2 gap-4 text-sm">
-                    <div>Role: ${character.role}</div>
-                    <div>Class: ${character.class}</div>
-                    <div>Level: ${character.level}</div>
-                    <div>Gender: ${character.gender}</div>
+                <div class="grid grid-cols-2 gap-2 text-sm mb-2">
+                    <div>Level: ${character.level || 'N/A'}</div>
+                    <div>Class: ${character.class || 'N/A'}</div>
                 </div>
-                <button onclick="viewCharacterDetails('${email}')" 
-                        class="mt-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md w-full">
-                    View Details
-                </button>
+                <div class="grid grid-cols-2 gap-2 text-sm">
+                    <div>Ninjutsu: ${character.ninjutsu || '0'}</div>
+                    <div>Taijutsu: ${character.taijutsu || '0'}</div>
+                    <div>Genjutsu: ${character.genjutsu || '0'}</div>
+                    <div>Health: ${character.health || '0'}</div>
+                    <div>Strength: ${character.strength || '0'}</div>
+                    <div>Speed: ${character.speed || '0'}</div>
+                    <div>Stamina: ${character.stamina || '0'}</div>
+                    <div>Hand Seals: ${character.handSeals || '0'}</div>
+                </div>
+                <div class="mt-2">
+                    <button onclick="viewCharacterDetails('${email}')" class="text-blue-400 hover:text-blue-500">View Details</button>
+                    <button onclick="deleteCharacter('${email}')" class="text-red-400 hover:text-red-500 ml-2">Delete</button>
+                </div>
             `;
             userList.appendChild(characterDiv);
         }
