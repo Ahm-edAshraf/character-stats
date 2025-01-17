@@ -108,10 +108,68 @@ async function loadCharacter() {
     }
 }
 
+// Points system
+function calculateTotalPoints(level) {
+    return 50 + (level * 5); // Base 50 points + 5 points per level
+}
+
+function updatePoints() {
+    const level = parseInt(document.getElementById('char-level').value) || 0;
+    const totalPoints = calculateTotalPoints(level);
+    
+    const stats = [
+        'ninjutsu', 'taijutsu', 'genjutsu', 'health', 
+        'strength', 'speed', 'stamina', 'hand-seals'
+    ];
+    
+    let usedPoints = 0;
+    stats.forEach(stat => {
+        const value = parseInt(document.getElementById(`char-${stat}`).value) || 0;
+        usedPoints += value;
+    });
+
+    const availablePoints = totalPoints - usedPoints;
+    document.getElementById('available-points').textContent = availablePoints;
+    document.getElementById('total-points').textContent = totalPoints;
+
+    // Disable save button if points are overspent
+    const saveButton = document.querySelector('button[onclick="saveCharacter()"]');
+    if (availablePoints < 0) {
+        saveButton.disabled = true;
+        saveButton.classList.add('opacity-50', 'cursor-not-allowed');
+        alert('You have used more points than available!');
+    } else {
+        saveButton.disabled = false;
+        saveButton.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+}
+
+// Add level change handler
+document.getElementById('char-level').addEventListener('change', updatePoints);
+
 // Save character data
 async function saveCharacter() {
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user) return;
+
+    const level = parseInt(document.getElementById('char-level').value) || 0;
+    const totalPoints = calculateTotalPoints(level);
+    
+    const stats = [
+        'ninjutsu', 'taijutsu', 'genjutsu', 'health', 
+        'strength', 'speed', 'stamina', 'hand-seals'
+    ];
+    
+    let usedPoints = 0;
+    stats.forEach(stat => {
+        const value = parseInt(document.getElementById(`char-${stat}`).value) || 0;
+        usedPoints += value;
+    });
+
+    if (usedPoints > totalPoints) {
+        alert('You have used more points than available!');
+        return;
+    }
 
     const character = {
         name: document.getElementById('char-name').value,
@@ -119,7 +177,7 @@ async function saveCharacter() {
         gender: document.getElementById('char-gender').value,
         age: document.getElementById('char-age').value,
         class: document.getElementById('char-class').value,
-        level: document.getElementById('char-level').value,
+        level: level,
         ninjutsu: document.getElementById('char-ninjutsu').value,
         taijutsu: document.getElementById('char-taijutsu').value,
         genjutsu: document.getElementById('char-genjutsu').value,
@@ -135,7 +193,6 @@ async function saveCharacter() {
     };
 
     try {
-        // Here you would typically save to the database
         localStorage.setItem(`character_${user.email}`, JSON.stringify(character));
         alert('Character saved successfully!');
     } catch (error) {
@@ -150,17 +207,20 @@ function populateCharacterForm(character) {
     document.getElementById('char-gender').value = character.gender || '';
     document.getElementById('char-age').value = character.age || '';
     document.getElementById('char-class').value = character.class || '';
-    document.getElementById('char-level').value = character.level || '';
-    document.getElementById('char-ninjutsu').value = character.ninjutsu || '';
-    document.getElementById('char-taijutsu').value = character.taijutsu || '';
-    document.getElementById('char-genjutsu').value = character.genjutsu || '';
-    document.getElementById('char-health').value = character.health || '';
-    document.getElementById('char-strength').value = character.strength || '';
-    document.getElementById('char-speed').value = character.speed || '';
-    document.getElementById('char-stamina').value = character.stamina || '';
-    document.getElementById('char-hand-seals').value = character.handSeals || '';
+    document.getElementById('char-level').value = character.level || '0';
+    document.getElementById('char-ninjutsu').value = character.ninjutsu || '0';
+    document.getElementById('char-taijutsu').value = character.taijutsu || '0';
+    document.getElementById('char-genjutsu').value = character.genjutsu || '0';
+    document.getElementById('char-health').value = character.health || '0';
+    document.getElementById('char-strength').value = character.strength || '0';
+    document.getElementById('char-speed').value = character.speed || '0';
+    document.getElementById('char-stamina').value = character.stamina || '0';
+    document.getElementById('char-hand-seals').value = character.handSeals || '0';
     document.getElementById('char-technique').value = character.technique || '';
     document.getElementById('char-backstory').value = character.backstory || '';
+
+    // Update points display
+    updatePoints();
 
     // Populate inventory and skills
     const inventoryList = document.getElementById('inventory-list');
