@@ -65,6 +65,13 @@ async function register() {
 
 // Logout function
 function logout() {
+    // Clear all character data from localStorage
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('character_')) {
+            localStorage.removeItem(key);
+        }
+    }
     localStorage.removeItem('user');
     location.reload();
 }
@@ -297,29 +304,31 @@ function viewCharacterDetails(email) {
             </div>
             <div class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
-                    <div>Role: ${character.role}</div>
-                    <div>Class: ${character.class}</div>
-                    <div>Level: ${character.level}</div>
-                    <div>Gender: ${character.gender}</div>
-                    <div>Age: ${character.age}</div>
+                    <div>Role: ${character.role || 'N/A'}</div>
+                    <div>Class: ${character.class || 'N/A'}</div>
+                    <div>Level: ${character.level || 'N/A'}</div>
+                    <div>Gender: ${character.gender || 'N/A'}</div>
+                    <div>Age: ${character.age || 'N/A'}</div>
                 </div>
                 
                 <div class="border-t border-gray-700 pt-4">
                     <h3 class="font-semibold mb-2">Stats</h3>
                     <div class="grid grid-cols-2 gap-4">
-                        <div>Strength: ${character.strength}</div>
-                        <div>Health: ${character.health}</div>
-                        <div>Speed: ${character.speed}</div>
-                        <div>Stamina: ${character.stamina}</div>
-                        <div>Cursed Energy: ${character.cursedEnergy}</div>
-                        <div>Intelligence: ${character.intelligence}</div>
-                        <div>Technique: ${character.technique}</div>
+                        <div>Ninjutsu: ${character.ninjutsu || '0'}</div>
+                        <div>Taijutsu: ${character.taijutsu || '0'}</div>
+                        <div>Genjutsu: ${character.genjutsu || '0'}</div>
+                        <div>Health: ${character.health || '0'}</div>
+                        <div>Strength: ${character.strength || '0'}</div>
+                        <div>Speed: ${character.speed || '0'}</div>
+                        <div>Stamina: ${character.stamina || '0'}</div>
+                        <div>Hand Seals: ${character.handSeals || '0'}</div>
+                        <div class="col-span-2">Technique: ${character.technique || 'None'}</div>
                     </div>
                 </div>
                 
                 <div class="border-t border-gray-700 pt-4">
                     <h3 class="font-semibold mb-2">Back Story</h3>
-                    <p>${character.backstory}</p>
+                    <p>${character.backstory || 'No backstory provided'}</p>
                 </div>
                 
                 <div class="border-t border-gray-700 pt-4">
