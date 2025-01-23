@@ -251,23 +251,23 @@ function addInventoryItem() {
 }
 
 function addInventoryItemToDOM(name, description) {
-    const inventoryList = document.getElementById('inventory-list');
-    const itemDiv = document.createElement('div');
-    itemDiv.className = 'item-card flex justify-between items-center p-2 rounded-md';
-    itemDiv.innerHTML = `
-        <div>
-            <strong>${name}</strong>: ${description}
-        </div>
-        <button onclick="this.parentElement.remove()" class="text-red-500 hover:text-red-700">×</button>
+    const div = document.createElement('div');
+    div.className = 'flex gap-2 items-center';
+    div.innerHTML = `
+        <input type="text" value="${name}" class="flex-1 px-3 py-2 bg-gray-700 rounded-md inventory-name">
+        <input type="text" value="${description}" class="flex-2 px-3 py-2 bg-gray-700 rounded-md inventory-desc">
+        <button onclick="this.parentElement.remove()" class="bg-red-600 hover:bg-red-700 px-3 py-2 rounded-md">Delete</button>
     `;
-    inventoryList.appendChild(itemDiv);
+    document.getElementById('inventory-list').appendChild(div);
 }
 
 function getInventoryItems() {
     const items = [];
-    document.querySelectorAll('#inventory-list .item-card').forEach(item => {
-        const [name, description] = item.querySelector('div').textContent.split(': ');
-        items.push({ name: name.trim(), description: description.trim() });
+    document.querySelectorAll('#inventory-list > div').forEach(div => {
+        items.push({
+            name: div.querySelector('.inventory-name').value,
+            description: div.querySelector('.inventory-desc').value
+        });
     });
     return items;
 }
@@ -285,23 +285,23 @@ function addSkill() {
 }
 
 function addSkillItemToDOM(name, description) {
-    const skillsList = document.getElementById('skills-list');
-    const skillDiv = document.createElement('div');
-    skillDiv.className = 'skill-card flex justify-between items-center p-2 rounded-md';
-    skillDiv.innerHTML = `
-        <div>
-            <strong>${name}</strong>: ${description}
-        </div>
-        <button onclick="this.parentElement.remove()" class="text-red-500 hover:text-red-700">×</button>
+    const div = document.createElement('div');
+    div.className = 'flex gap-2 items-center';
+    div.innerHTML = `
+        <input type="text" value="${name}" class="flex-1 px-3 py-2 bg-gray-700 rounded-md skill-name">
+        <input type="text" value="${description}" class="flex-2 px-3 py-2 bg-gray-700 rounded-md skill-desc">
+        <button onclick="this.parentElement.remove()" class="bg-red-600 hover:bg-red-700 px-3 py-2 rounded-md">Delete</button>
     `;
-    skillsList.appendChild(skillDiv);
+    document.getElementById('skills-list').appendChild(div);
 }
 
 function getSkillItems() {
     const skills = [];
-    document.querySelectorAll('#skills-list .skill-card').forEach(skill => {
-        const [name, description] = skill.querySelector('div').textContent.split(': ');
-        skills.push({ name: name.trim(), description: description.trim() });
+    document.querySelectorAll('#skills-list > div').forEach(div => {
+        skills.push({
+            name: div.querySelector('.skill-name').value,
+            description: div.querySelector('.skill-desc').value
+        });
     });
     return skills;
 }
